@@ -30,6 +30,7 @@ class ActiveTodoCountCubit extends Cubit<ActiveTodoCountState> {
       emit(state.copyWith(activeTodoCount: currentActiveTodoCount));
     });
   }
+
   @override
   Future<void> close() {
     todoListSubscreiption.cancel();
