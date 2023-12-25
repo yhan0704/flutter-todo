@@ -12,50 +12,78 @@ class ShowTodo extends StatelessWidget {
   Widget build(BuildContext context) {
     final todos = context.watch<FilteredTodosCubit>().state.filteredTodos;
 
-    return ListView.separated(
-      primary: false,
-      shrinkWrap: true,
-      itemBuilder: (BuildContext context, int index) {
-        return Dismissible(
-          key: ValueKey(todos[index].id),
-          child: TodoItem(
-            todo: todos[index],
-          ),
-          background: showBackground(0),
-          onDismissed: (_) {
-            context.read<TodoListCubit>().removeTodo(todos[index]);
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<TodoListCubit, TodoListState>(
+          listener: (context, state) {
+            context.read<FilteredTodosCubit>().setFilteredTodos(
+                context.read<TodoFilterCubit>().state.filter,
+                state.todos,
+                context.read<TodoSearchCubit>().state.searchTerm);
           },
-          confirmDismiss: (_) {
-            return showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) {
-                return AlertDialog(
-                  title: Text('Are you sure?'),
-                  content: Text('Do you really want to delete?'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: Text('NO'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, true),
-                      child: Text('YES'),
-                    ),
-                  ],
-                );
-              },
-            );
+        ),
+        BlocListener<TodoFilterCubit, TodoFilterState>(
+          listener: (context, state) {
+            context.read<FilteredTodosCubit>().setFilteredTodos(
+                state.filter,
+                context.read<TodoListCubit>().state.todos,
+                context.read<TodoSearchCubit>().state.searchTerm);
           },
-          secondaryBackground: showBackground(1),
-        );
-      },
-      separatorBuilder: (BuildContext context, int index) {
-        return Divider(
-          color: Colors.grey,
-        );
-      },
-      itemCount: todos.length,
+        ),
+        BlocListener<TodoSearchCubit, TodoSearchState>(
+          listener: (context, state) {
+            context.read<FilteredTodosCubit>().setFilteredTodos(
+                context.read<TodoFilterCubit>().state.filter,
+                context.read<TodoListCubit>().state.todos,
+                state.searchTerm);
+          },
+        ),
+      ],
+      child: ListView.separated(
+        primary: false,
+        shrinkWrap: true,
+        itemBuilder: (BuildContext context, int index) {
+          return Dismissible(
+            key: ValueKey(todos[index].id),
+            child: TodoItem(
+              todo: todos[index],
+            ),
+            background: showBackground(0),
+            onDismissed: (_) {
+              context.read<TodoListCubit>().removeTodo(todos[index]);
+            },
+            confirmDismiss: (_) {
+              return showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text('Are you sure?'),
+                    content: Text('Do you really want to delete?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: Text('NO'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: Text('YES'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            secondaryBackground: showBackground(1),
+          );
+        },
+        separatorBuilder: (BuildContext context, int index) {
+          return Divider(
+            color: Colors.grey,
+          );
+        },
+        itemCount: todos.length,
+      ),
     );
   }
 
