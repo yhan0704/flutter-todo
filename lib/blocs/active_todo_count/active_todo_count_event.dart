@@ -8,20 +8,19 @@ sealed class ActiveTodoCountEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class CalculateActiveTodoCount extends ActiveTodoCountEvent {
+class CalculateActiveTodoCountEvent extends ActiveTodoCountEvent {
   final int activeTodoCount;
-  CalculateActiveTodoCount({
+  CalculateActiveTodoCountEvent({
     required this.activeTodoCount,
   });
 
   @override
   String toString() =>
-      'CalculateActiveTodoCount(activeTodoCount: $activeTodoCount)';
+      'CalculateActiveTodoCountEvent(activeTodoCount: $activeTodoCount)';
 
   @override
   List<Object> get props => [activeTodoCount];
 }
-
 
 
 

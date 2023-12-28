@@ -25,7 +25,7 @@ class TodosPage extends StatelessWidget {
                   height: 20.0,
                 ),
                 SearchAndFilterTodo(),
-                ShowTodo()
+                ShowTodos()
               ],
             ),
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:todo_cubit/cubits/cubits.dart';
+import 'package:todo_cubit/blocs/blocs.dart';
+import 'package:todo_cubit/blocs/filtered_todos/filtered_todos_bloc.dart';
 import 'package:todo_cubit/pages/todos_page/todos_page.dart';
 
 // import 'pages/todos_page.dart';
@@ -16,26 +17,30 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<TodoFilterCubit>(
-          create: (context) => TodoFilterCubit(),
+        BlocProvider<TodoFilterBloc>(
+          create: (context) => TodoFilterBloc(),
         ),
-        BlocProvider<TodoSearchCubit>(
-          create: (context) => TodoSearchCubit(),
+        BlocProvider<TodoSearchBloc>(
+          create: (context) => TodoSearchBloc(),
         ),
-        BlocProvider<TodoListCubit>(
-          create: (context) => TodoListCubit(),
+        BlocProvider<TodoListBloc>(
+          create: (context) => TodoListBloc(),
         ),
-        BlocProvider<ActiveTodoCountCubit>(
-          create: (context) => ActiveTodoCountCubit(
+        BlocProvider<ActiveTodoCountBloc>(
+          create: (context) => ActiveTodoCountBloc(
             initialActiveTodoCount:
-                context.read<TodoListCubit>().state.todos.length,
+                context.read<TodoListBloc>().state.todos.length,
+            todoListBloc: BlocProvider.of<TodoListBloc>(context),
           ),
         ),
-        BlocProvider<FilteredTodosCubit>(
-          create: (context) => FilteredTodosCubit(
-            initialTodos: context.read<TodoListCubit>().state.todos,
+        BlocProvider<FilteredTodosBloc>(
+          create: (context) => FilteredTodosBloc(
+            initialTodos: context.read<TodoListBloc>().state.todos,
+            todoFilterBloc: BlocProvider.of<TodoFilterBloc>(context),
+            todoSearchBloc: BlocProvider.of<TodoSearchBloc>(context),
+            todoListBloc: BlocProvider.of<TodoListBloc>(context),
           ),
-        )
+        ),
       ],
       child: MaterialApp(
         title: 'TODO',
@@ -43,7 +48,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: const TodosPage(),
+        home: TodosPage(),
       ),
     );
   }
